@@ -26,12 +26,8 @@ tsne = read.csv('CSV Files/tsne.csv')
 word_counts = read.csv('CSV Files/word_counts_by_movie.csv')
 all_characters = unique(scripts %>% group_by(character) %>% summarize(n = n()) %>% arrange(desc(n)) %>% select(character))$character
 all_films = c("EpisodeIV", "EpisodeV", "EpisodeVI")
-# palette = colorRampPalette(c("#081d58", "#253494", "#225ea8", "#1d91c0", "#41b6c4", "#7fcdbb", "#c7e9b4", "#edf8b1", "#ffffd9"))
-palette = colorRampPalette(c("#000000","#260101","#4D0303","#730505","#990606","#C00707","#E60909", "#EA290C","#EE490E","#F36911","#F78914","#FBA916","#FFC919", "#FFD23D","#FFDB62","#FFE486","#FFEDAA","#FFF6CF","#FFFFF3"))
-# color_vec = c("022A99","2C4D83","56716D","819557","ABB840","D5DC2A","FFFF14")
-# colors = c()
-# for (color in color_vec){colors = c(colors, paste("#", color, sep = ""))}
-# palette = colorRampPalette(colors)
+
+palette = colorRampPalette(c('#a50026','#d73027','#f46d43','#fdae61','#fee090','#e0f3f8','#abd9e9','#74add1','#4575b4','#313695'))
 
 ```
 
@@ -44,8 +40,8 @@ TSNE Plot
 Column {.sidebar data-width=200}
 -------------------------------------------------------------------
 ```{r}
-selectInput(inputId = "characters_tsne", label = "Select Character(s):", choices = all_characters, multiple = TRUE, selected = all_characters)
-selectInput(inputId = "films_tsne", label = "Select Film(s):", choices = all_films, multiple = TRUE, selected = all_films)
+selectInput(inputId = "characters_tsne", label = "Select Character(s):", choices = c("All Characters", all_characters), multiple = TRUE, selected = "All Characters")
+selectInput(inputId = "films_tsne", label = "Select Film(s):", choices = c("All Films", all_films), multiple = TRUE, selected = "All Films")
 ```
 
 
@@ -55,12 +51,12 @@ Column {}
 ### TSNE Plot
 
 This plot is a 2D visual representation of a character's lines. The actual coordinates don't hold meaning, but the distance between points does. So, two points that are close together represent two characters with similar dialogue in the films.
-The points in the graph are sized according to the number of lines, and colored according to average sentiment such that negative sentiment is colored red, and positive sentiment is yellow/white.
+The points in the graph are sized according to the number of lines, and colored according to average sentiment such that negative sentiment is colored red (Sith), and positive sentiment is blue (Jedi).
 
 
 ```{r}
 renderPlotly({
-  tsne_plot(input$characters_tsne, input$films_tsne, tsne, color_palette = palette)
+  tsne_plot(input$characters_tsne, input$films_tsne, tsne, color_palette = palette, color_max = quantile(tsne$compound, 0.9), color_min = quantile(tsne$compound, 0.1))
 })
 ```
 
@@ -74,8 +70,8 @@ Sentiment Analysis I
 Column {.sidebar data-width=200}
 -------------------------------------------------------------------
 ```{r}
-selectInput(inputId = "characters_sentiment", label = "Select Character(s):", choices = all_characters, multiple = TRUE, selected = c("LUKE", "VADER"))
-selectInput(inputId = "films_sentiment", label = "Select Film(s):", choices = all_films, multiple = TRUE, selected = all_films)
+selectInput(inputId = "characters_sentiment", label = "Select Character(s):", choices = c("All Characters", all_characters), multiple = TRUE, selected = c("LUKE", "VADER"))
+selectInput(inputId = "films_sentiment", label = "Select Film(s):", choices = c("All Films", all_films), multiple = TRUE, selected = "All Films")
 ```
 
 
@@ -105,8 +101,8 @@ Sentiment Analysis II
 Column {.sidebar data-width=200}
 -------------------------------------------------------------------
 ```{r}
-selectInput(inputId = "characters_sentiment2", label = "Select Character(s):", choices = all_characters, multiple = TRUE, selected = c("LUKE", "LEIA", "HAN", "VADER"))
-selectInput(inputId = "films_sentiment2", label = "Select Film(s):", choices = all_films, multiple = TRUE, selected = all_films)
+selectInput(inputId = "characters_sentiment2", label = "Select Character(s):", choices = c("All Characters", all_characters), multiple = TRUE, selected = c("LUKE", "LEIA", "HAN", "VADER"))
+selectInput(inputId = "films_sentiment2", label = "Select Film(s):", choices = c("All Films", all_films), multiple = TRUE, selected = "All Films")
 selectInput(inputId = "met_sentiment2", label = "Select Metric to Display:", choices = c("Sentiment", "Positive", "Neutral", "Negative"), selected = "Sentiment")
 ```
 

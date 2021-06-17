@@ -9,6 +9,9 @@ embeds = read.csv('CSV Files/embeds.csv')
 tsne = read.csv('CSV Files/tsne.csv')
 word_counts = read.csv('CSV Files/word_counts_by_movie.csv')
 
+all_characters = unique(scripts %>% group_by(character) %>% summarize(n = n()) %>% arrange(desc(n)) %>% select(character))$character
+all_films = c("EpisodeIV", "EpisodeV", "EpisodeVI")
+
 scripts = scripts %>% group_by(film) %>% mutate(line_num = row_number())
 
 
@@ -30,6 +33,8 @@ create_wordcloud = function(films, img, word_counts){
 
 ###Sentiment Time Series
 sentiment_time = function(characters, films, scripts, color_palette = color_palette){
+  if (films == "All Films"){films = all_films}
+  
   scripts = scripts %>% group_by(film) %>% mutate(line_num = row_number())
   #get unique set of characters
   chars = unique(scripts[c("character", "film")])
@@ -57,6 +62,7 @@ sentiment_time = function(characters, films, scripts, color_palette = color_pale
 
 ###sentiment Bar Chart
 sentiment_bar = function(characters, films, scripts, met, color_palette = color_palette){
+  if (films == "All Films"){films = all_films}
   
   h = hash()
   h[["Sentiment"]] = "compound"
@@ -82,6 +88,7 @@ sentiment_bar = function(characters, films, scripts, met, color_palette = color_
 
 ###Sentiment over number of lines
 sentiment_over_lines = function(characters, films, scripts, met, color_palette = color_palette){
+  if (films == "All Films"){films = all_films}
   data = scripts %>% group_by(character, film) %>% summarize(lines = n(), Sentiment = mean(compound), Positive = mean(pos), Neutral = mean(neu), Negative = mean(neg))
   df = data.frame()
   for (char in characters){
@@ -98,23 +105,28 @@ sentiment_over_lines = function(characters, films, scripts, met, color_palette =
 
 
 ###TSNE Plot
-tsne_plot = function(characters, films, tsne, color_palette = color_palette){
-  #filter for characters and movies desired
+tsne_plot = function(characters, films, tsne, color_palette = color_palette, color_max = 0.25, color_min = -0.25){
+  temp = tsne
+  temp$Sentiment = replace(temp$compound, temp$compound > color_max, color_max)
+  temp$Sentiment = replace(temp$Sentiment, temp$Sentiment < color_min, color_min)
+  
+  
+  if (characters == "All Characters"){characters = all_characters}
+  if (films == "All Films"){films = all_films}
   df = data.frame()
   for (char in characters){
     for (movie in films){
-      df = rbind(df, tsne %>% filter(character == char & film == movie))
+      df = rbind(df, temp %>% filter(character == char & film == movie))
     }
   }
   
   palette = color_palette(100)
   
-  m = list(size=~0.2*line_count+8, line=list(color='black', width=1), text=~character) #marker characteristics
-  t = ~paste("Character:", character, "<br>Film:", film, "<br>Lines:", line_count, "<br>Sentiment:", round(Sentiment, 2)) #hover text
+  m = list(sizeref = 0.25, line=list(color='black', width=1), text=~character) #marker characteristics
+  t = ~paste("Character:", character, "<br>Film:", film, "<br>Lines:", line_count, "<br>Sentiment:", round(compound, 2)) #hover text
   ax = list(title="", showline=F, zeroline=F, showticklabels=T, tickfont=list(size=10)) #axis
-  fig = plot_ly(data=df %>% rename(Sentiment = compound), x=~x, y=~y, type="scatter", mode='markers', colors = palette, name=~paste(character, "-", film), marker = m, color = ~Sentiment, text = t, hoverinfo = "text")
-  fig = fig %>% layout(showlegend = F, xaxis = ax, yaxis = ax, title = "TSNE Plot, Sized by Line Count, Colored by Avg. Sentiment")
-  #fig = fig %>% hide_colorbar()
   
+  fig = plot_ly(data=df, x=~x, y=~y, type="scatter", mode='markers', colors = palette, name=~paste(character, "-", film), marker = m, color = ~Sentiment, size=~(line_count), text = t, hoverinfo = "text")
+  fig = fig %>% layout(showlegend = F, xaxis = ax, yaxis = ax, title = "TSNE Plot, Sized by Line Count, Colored by Avg. Sentiment")
   return(fig)
 }
