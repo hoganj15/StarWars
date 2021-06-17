@@ -99,7 +99,7 @@ sentiment_over_lines = function(characters, films, scripts, met, color_palette =
   
   t = ~paste("Name:", character, "<br>Film:", film, paste("<br>", met, ":", sep = ""), round(get(met), 3))
   fig = plot_ly(data = df, x = ~lines, y = ~get(met), name = ~paste(character, "-", film), marker = list(color = color_palette(length(df$character)), line = list(color = "black", width = 1), size = 20), text = t, hoverinfo = "text")
-  fig = fig %>% layout(title = paste(met, "over Total Lines"), showlegend = F, xaxis = list(title = "Line Count"), yaxis = list(title = met))
+  fig = fig %>% layout(title = paste(met, "over Total Lines"), showlegend = T, xaxis = list(title = "Line Count"), yaxis = list(title = met))
   return(fig)
 }
 
@@ -126,7 +126,7 @@ tsne_plot = function(characters, films, tsne, color_palette = color_palette, col
   t = ~paste("Character:", character, "<br>Film:", film, "<br>Lines:", line_count, "<br>Sentiment:", round(compound, 2)) #hover text
   ax = list(title="", showline=F, zeroline=F, showticklabels=T, tickfont=list(size=10)) #axis
   
-  fig = plot_ly(data=df, x=~x, y=~y, type="scatter", mode='markers', colors = palette, name=~paste(character, "-", film), marker = m, color = ~Sentiment, size=~(line_count), text = t, hoverinfo = "text")
+  fig = plot_ly(data=df, x=~x, y=~y, type="scatter", mode='markers', colors = palette, name=~paste(character, "-", film), marker = m, color = ~Sentiment, size=~(line_count), text = t, hoverinfo = "text", height = 1150)
   fig = fig %>% layout(showlegend = F, xaxis = ax, yaxis = ax, title = "TSNE Plot, Sized by Line Count, Colored by Avg. Sentiment")
   return(fig)
 }
