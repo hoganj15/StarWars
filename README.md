@@ -1,5 +1,5 @@
 # StarWars
-Text analysis of the Star Wars original trilogy films.
+Text analysis of the Star Wars original trilogy film scripts.
 
 Script cleaning and Word2Vec analysis was done via Python, and visualizations and dashboard creation were created in R.
 
