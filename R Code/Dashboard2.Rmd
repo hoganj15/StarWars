@@ -119,7 +119,7 @@ This plot shows the average chosen sentiment metric over the total number of lin
 
 ```{r}
 renderPlotly({
-  sentiment_over_lines(input$characters_sentiment, input$films_sentiment, scripts, met = input$met_sentiment2, color_palette = palette)
+  sentiment_over_lines(input$characters_sentiment2, input$films_sentiment2, scripts, met = input$met_sentiment2, color_palette = palette)
 })
 ```
 
@@ -130,6 +130,6 @@ This plot shows the average chosen sentiment metric of a character in each film 
 
 ```{r}
 renderPlotly({
-  sentiment_bar(input$characters_sentiment, input$films_sentiment, scripts, met = input$met_sentiment2, color_palette = palette)
+  sentiment_bar(input$characters_sentiment2, input$films_sentiment2, scripts, met = input$met_sentiment2, color_palette = palette)
 })
 ```
