@@ -68,7 +68,7 @@ sentiment_bar = function(characters, films, scripts, met, color_palette = color_
   h[["Sentiment"]] = "compound"
   h[["Positive"]] = "pos"
   h[["Neutral"]] = "neu"
-  h[["Negative"]] == "neg"
+  h[["Negative"]] = "neg"
   
   avg_sentiments = spread(scripts %>% group_by(character, film) %>% summarize(sentiment = mean(get(h[[met]]))), key=film, value=sentiment)
   df = data.frame()
